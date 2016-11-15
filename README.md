@@ -6,6 +6,7 @@
     * `part_2`:行为名称，`login`、`logout`
 - CRUD
     * model一般含有增删改查四个方法，分别对应`add`、`remove`、`change`、`read`
+    
 ##Model
 
 ###User 用户模块
