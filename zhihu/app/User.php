@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -42,6 +43,18 @@ class User extends Model
         }
     }
 
+    //获取用户信息api
+    public function read()
+    {
+        if (!rq('id'))
+            return err('required id');
+
+        //获取部分字段
+        $get = ['id', 'username', 'avatar_url', 'intro'];
+        $user = $this->find(rq('id'), $get);
+        dd($user->toArray());
+    }
+
     //登陆API
     public function login()
     {
@@ -74,7 +87,6 @@ class User extends Model
 
         return suc($user->id);
     }
-
 
     //检查用户名和密码是否为空
     public function has_username_and_password()
@@ -109,7 +121,7 @@ class User extends Model
         return session('user_id') ?:false;
     }
 
-    //跟改密码api
+    //更改密码api
     public function change_password()
     {
         if (!$this->is_logged_in())
@@ -125,14 +137,92 @@ class User extends Model
 
         $user->password = bcrypt(rq('new_password'));
         return $user->save() ?
-            ['status' => 1]:
+            suc():
             err('db update failed');
     }
 
     //找回密码
     public function reset_password()
     {
-        return 1;
+        //验证是否机器人
+        if ($this->is_robot())
+            return err('max frequency reached');
+
+        if (!rq('phone'))
+            return err('phone is required');
+
+        $user = $this->where('phone', rq('phone'))->first();
+
+        if (!$user)
+            return err('invalid phone number');
+
+        //生成验证码
+        $captcha = $this->generate_captcha();
+        $user->phone_captcha = $captcha;
+
+        if ($user->save())
+        {
+            //如果验证码生成成功，短信发送验证码
+            $this->send_sms();
+            $this->update_robot_time();
+            return suc();
+        }
+        return err('db update failed');
+    }
+
+    //对接短信发送接口
+    public function send_sms()
+    {
+        return true;
+    }
+
+    //生成验证码
+    public function generate_captcha()
+    {
+        return rand(1000, 9999);
+    }
+
+    //验证找回密码api
+    public function validate_reset_password()
+    {
+        //验证是否机器人
+        if ($this->is_robot(2))
+            return err('max frequency reached');
+
+        if (!rq('phone') || !rq('phone_captcha') || !rq('new_password'))
+            return err('phone, new_password and phone_captcha are required');
+
+        $user = $this->where([
+            'phone' => rq('phone'),
+            'phone_captcha' => rq('phone_captcha')
+        ])->first();
+
+        $this->update_robot_time();
+        if (!$user)
+            return err('invalid phone or invalid phone_captcha');
+
+        $user->password = bcrypt(rq('new_password'));
+        return $user->save()?
+            suc():
+            err('db update failed');
+
+    }
+
+    //验证是否是机器人
+    public function is_robot($time = 10)
+    {
+        //如果session中没有last_active_time，直接返回false
+        if (!session('last_active_time'))
+            return false;
+        $current_time = time();
+        $last_active_time = session('last_active_time');
+        return ($current_time - $last_active_time) < $time;
+    }
+
+    //保存验证时间
+    public function update_robot_time()
+    {
+        session()->set('last_active_time', time());
     }
 
     public function answers()

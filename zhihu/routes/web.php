@@ -86,6 +86,15 @@ Route::any('api/user/reset_password', function () {
     return user_ins()->reset_password();
 });
 
+Route::any('api/user/validate_reset_password', function () {
+    return user_ins()->validate_reset_password();
+});
+
+Route::any('api/user/read', function () {
+    return user_ins()->read();
+});
+
+
 //Question
 Route::any('api/question/add', function () {
     return question_ins()->add();
