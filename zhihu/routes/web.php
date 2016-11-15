@@ -29,11 +29,11 @@ function err($msg = null)
     return ['status' => 0, 'msg' => $msg];
 }
 
-function suc($data_to_merge = null)
+function suc($data_to_merge = [])
 {
-    $data = ['status' => 1];
+    $data = ['status' => 1, 'data' => []];
     if ($data_to_merge)
-        $data = array_merge($data, $data_to_merge);
+        $data['data'] = array_merge($data['data'], $data_to_merge);
     return $data;
 }
 

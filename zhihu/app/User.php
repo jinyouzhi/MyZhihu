@@ -52,7 +52,14 @@ class User extends Model
         //获取部分字段
         $get = ['id', 'username', 'avatar_url', 'intro'];
         $user = $this->find(rq('id'), $get);
-        dd($user->toArray());
+        $data = $user->toArray();
+        $answer_count = answer_ins()->where('user_id', rq('id'))->count();
+        $question_count = question_ins()->where('user_id', rq('id'))->count();
+        $data['answer_count'] = $answer_count;
+        $data['question_count'] = $question_count;
+        //$answer_count = $user->answers()->count();
+        //$question_count = $user->questions()->count();
+        return suc($data);
     }
 
     //登陆API
@@ -233,4 +240,11 @@ class User extends Model
             ->withTimestamps();
     }
 
+    public function questions()
+    {
+        return $this
+            ->belongsToMany('App\Question')
+            ->withPivot('vote')
+            ->withTimestamps();
+    }
 }
