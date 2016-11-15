@@ -129,6 +129,12 @@ class User extends Model
             err('db update failed');
     }
 
+    //找回密码
+    public function reset_password()
+    {
+        return 1;
+    }
+
     public function answers()
     {
         return $this
