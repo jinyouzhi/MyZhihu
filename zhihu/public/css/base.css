@@ -135,6 +135,7 @@ input,button{
 
 #quick_ask.button,
 button.primary{
+    margin-top: 10px;
     background: #075fb6;
     color: #fff;
     border: 1px solid rgba(0,0,0,.2);
