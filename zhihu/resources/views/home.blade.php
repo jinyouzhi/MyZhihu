@@ -9,9 +9,11 @@
     <h1>最近动态</h1>
     <div class="hr"></div>
     <div class="item-set">
-        <div ng-repeat="item in Timeline.data" class="item">
-            <div class="item">
-                <div class="vote"></div>
+        <div ng-repeat="item in Timeline.data" class="feed item clearfix">
+                <div ng-if="item.question_id" class="vote">
+                    <div class="up">[: item.upvote_count :]</div>
+                    <div class="down">反对</div>
+                </div>
                 <div class="feed-item-content">
                     <div ng-if="item.question_id" class="content-act"> [: item.user.username :] 添加了回答</div>
                     <div ng-if="!item.question_id" class="content-act"> [: item.user.username :] 添加了提问</div>
@@ -55,7 +57,6 @@
                     </div>
                 </div>
                 <div class="hr"></div>
-            </div>
         </div>
         <div ng-if="Timeline.no_more_data" class="tac">没有更多数据啦</div>
     </div>

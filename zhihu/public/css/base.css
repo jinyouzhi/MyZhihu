@@ -31,10 +31,11 @@ a {
 
 .hr {
     display: block;
-    width: 100%;
+    width: 98%;
     height: 1px;
-    background:  rgba(0,0,0,.08);
-    margin: 10px auto;
+    background: rgba(0, 0, 0, .08);
+    margin: 10px 1%;
+
 }
 
 .clearfix:after,
@@ -141,6 +142,52 @@ input {
     font-size: 16px;
 }
 
+.item {
+    margin: 10px auto;
+}
+
+.feed.item .vote {
+    float: left;
+    width: 10%;
+    height: 100%;
+}
+
+.feed.item .hr {
+    float: left;
+}
+
+.feed.item .feed-item-content {
+    float: left;
+    width: auto;
+    padding-left: 5px;
+}
+
+.feed.item .vote > * {
+    background: rgba(0, 100, 255, .1);
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 3px;
+    margin-bottom: 2px;
+    padding: 2px;
+    cursor: pointer;
+}
+.feed.item .vote .up{
+    color: #075fb6;
+    padding: 4px;
+}
+.feed.item .vote .up:hover{
+    background: #074f96;
+    color: #FFF;
+}
+.feed.item .vote .down{
+    background: rgba(0,0,0,0.1);
+    color: #555;
+}
+.feed.item .vote .down:hover{
+    background: rgba(0,0,0,0.5);
+    color: #FFF;
+}
+
 .home.feed-item-content.title
 .home .content-owner {
     color: #222;
@@ -164,46 +211,50 @@ input {
 .feed-item-content .content-main {
     font-size: 13px;
 }
-.comment-item-set
-{
+
+.comment-item-set {
     padding: 0 10px;
 }
 
-.comment-item-set .rect{
+.comment-item-set .rect {
     position: relative;
     bottom: 20px;
-    width:0;
-    height:10px;
+    width: 0;
+    height: 10px;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-bottom: 6px solid rgba(0,0,0,.08);
+    border-bottom: 6px solid rgba(0, 0, 0, .08);
 }
-
 
 .comment-item .user {
     font-weight: 550;
     float: left;
     width: 10%;
 }
-.comment-item .comment-content{
+
+.comment-item .comment-content {
     float: right;
     width: 90%;
 }
-.comment-item{
+
+.comment-item {
     padding-bottom: 10px;
 }
-.comment-block{
+
+.comment-block {
     display: none;
     padding-top: 20px;
     margin-top: -20px;
 }
 
-.action-set:hover + .comment-block{
+.action-set:hover + .comment-block {
     display: block;
 }
-.comment-block:hover{
+
+.comment-block:hover {
     display: block;
 }
+
 .input-group {
     margin-bottom: 10px;
 }
@@ -235,6 +286,7 @@ button[disabled] {
     background: #eee;
     color: #aaa;
 }
-.tac{
+
+.tac {
     text-align: center;
 }

@@ -79,6 +79,18 @@ Route::group(['prefix' => 'api'], function () {
         Route::any('logout', function () {
             return user_ins()->logout();
         });
+        Route::any('read', function () {
+            return user_ins()->read();
+        });
+        Route::any('change_password', function () {
+            return user_ins()->change_password ();
+        });
+        Route::any('reset_password', function () {
+            return user_ins()->reset_password();
+        });
+        Route::any('validate_reset_password', function () {
+            return user_ins()->validate_reset_password();
+        });
     });
     Route::group(['prefix' => 'question'], function () {
         Route::any('add', function () {
@@ -103,6 +115,9 @@ Route::group(['prefix' => 'api'], function () {
         });
         Route::any('read', function () {
             return answer_ins()->read();
+        });
+        Route::any('vote', function () {
+            return answer_ins()->vote();
         });
     });
     Route::group(['prefix' => 'comment'], function () {
