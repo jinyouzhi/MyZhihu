@@ -3,8 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Request;
 
 
 class User extends Model
@@ -35,7 +35,7 @@ class User extends Model
         $user->username = $username;
         if ($user->save())
         {
-            return suc($user->id);
+            return suc(['id' => $user->id]);
         }
         else
         {
@@ -59,7 +59,7 @@ class User extends Model
         $data['question_count'] = $question_count;
         //$answer_count = $user->answers()->count();
         //$question_count = $user->questions()->count();
-        return suc($data);
+        return suc(['id' => $data]);
     }
 
     //登陆API
@@ -92,7 +92,7 @@ class User extends Model
         session()->put('user_id', $user->id);
         //dd(session()->all());
 
-        return suc($user->id);
+        return suc(['id' => $user->id]);
     }
 
     //检查用户名和密码是否为空
@@ -116,7 +116,7 @@ class User extends Model
         session()->forget('user_id');
         //清除所有信息
         //session()->flush();
-        return ['status' => 1];
+        return suc();
         //return redirect('/');
         //dd(session()->all());
     }
