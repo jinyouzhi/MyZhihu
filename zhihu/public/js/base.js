@@ -19,15 +19,15 @@
                 $stateProvider
                     .state('home', {
                         url: '/home',
-                        templateUrl: 'home.tpl' //localhost:8000/home.tpl
+                        templateUrl: 'tpl/page/home'
                     })
                     .state('login', {
                         url: '/login',
-                        templateUrl: 'login.tpl'
+                        templateUrl: 'tpl/page/login'
                     })
                     .state('signup', {
                         url: '/signup',
-                        templateUrl: 'signup.tpl'
+                        templateUrl: 'tpl/page/signup'
                     })
                     .state('question', {
                         abstract: true,
@@ -36,7 +36,7 @@
                     })
                     .state('question.add', {
                         url: '/add',
-                        templateUrl: 'question.add.tpl'
+                        templateUrl: 'tpl/page/question_add'
                     })
             }])
 
@@ -65,12 +65,11 @@
                                 $state.go('home');
                                 location.href = '/';
                             }
-                            else
-                            {
+                            else {
                                 me.login_failed = true;
                             }
                         }, function () {
-                            
+
                         })
                 }
                 me.username_exists = function () {
@@ -108,7 +107,7 @@
             function ($scope, UserService) {
                 $scope.User = UserService;
             }
-         ])
+        ])
 
         .service('QuestionService', [
             '$http',
@@ -120,17 +119,15 @@
                     $state.go('question.add');
                 }
                 me.add = function () {
-                    if(!me.new_question.title)
+                    if (!me.new_question.title)
                         return;
 
                     $http.post('/api/question/add', me.new_question)
                         .then(function (r) {
-                            console.log('r', r);
-                            // if (r.data.status)
-                            // {
-                            //     me.new_question = {};
-                            //     $state.go('home');
-                            // }
+                            if (r.data.status) {
+                                me.new_question = {};
+                                $state.go('home');
+                            }
 
                         }, function (e) {
 
@@ -148,6 +145,56 @@
             }
         ])
 
+        .service('TimelineService', [
+            '$http',
+            function ($http) {
+                var me = this;
+                me.data = [];
+                me.current_page = 1;
+                me.no_more_data = false;
+                me.get = function (conf) {
+                    conf = conf || {page: me.current_page};
+                    if (me.no_more_data)
+                        return;
+                    $http.post('/api/timeline', conf)
+                        .then(function (r) {
+                            if (r.data.status) {
+                                if (r.data.data.length ) {
+                                    me.current_page++;
+                                    me.data = me.data.concat(r.data.data);
+                                }
+                                else {
+                                    me.no_more_data = true;
+                                    console.log(1);
+                                }
+                            }
+                            else
+                                console.error('network error');
+                        }, function () {
+                            console.error('network error');
+                        })
+                }
+            }
+        ])
+
+        .controller('HomeController', [
+            '$scope',
+            'TimelineService',
+            function ($scope, TimelineService) {
+                var $win;
+                $scope.Timeline = TimelineService;
+                TimelineService.get();
+
+                $win = $(window);
+                $win.on('scroll', function () {
+                    //console.log('$win.scrollTop()', $win.scrollTop());
+                    if ($win.scrollTop() == $(document).height() - $win.height()) {
+                        //console.log(1);
+                        TimelineService.get();
+                    }
+                })
+            }
+        ])
 
 
     // .controller('TestController', function ($scope) {

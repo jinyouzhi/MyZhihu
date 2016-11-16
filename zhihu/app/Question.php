@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Request;
 
 class Question extends Model
 {
@@ -20,11 +21,12 @@ class Question extends Model
 
         $this->title = rq('title');
         $this->user_id = session('user_id');
+
         if (rq('desc')) //如果存在描述就添加描述
             $this->desc = rq('desc');
 
         //保存
-        return $this->save() ?
+        return $this->save() || $this->users()->attach([session('user_id')]) ?
             ['status' => 1, 'id' => $this->id] :
             ['status' => 0, 'msg' => 'db insert failed'];
     }
@@ -97,5 +99,17 @@ class Question extends Model
         return $question->delete() ?
             suc():
             err('db delete failed');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+    public function users()
+    {
+        return $this
+            ->belongsToMany('App\User')
+            ->withTimestamps();
     }
 }

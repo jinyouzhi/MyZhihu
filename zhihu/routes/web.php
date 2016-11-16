@@ -12,10 +12,9 @@
 */
 
 
-
-function paginate($page=1, $limit=16)
+function paginate($page = 1, $limit = 16)
 {
-    $limit = $limit?:16;
+    $limit = $limit ?: 16;
     $skip = ($page ? $page - 1 : 0) * $limit;
     return [$limit, $skip];
 }
@@ -33,81 +32,106 @@ function suc($data_to_merge = [])
     return $data;
 }
 
+function is_logged_in()
+{
+    return session('user_id') ?: false;
+}
+
 function user_ins()
 {
     return new App\User();
 }
+
 function question_ins()
 {
     return new App\Question();
 }
+
 function answer_ins()
 {
     return new App\Answer();
 }
+
 function comment_ins()
 {
     return new App\Comment();
 }
+
 function rq($key = null, $default = null)
 {
-    if(!$key) {
+    if (!$key) {
         return Request::all();
     }
     return Request::get($key, $default);
 }
+
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
-Route::group(['prefix'=>'api'], function() {
-    Route::group(['prefix'=>'user'],function() {
-        Route::any('signup', function() {
+Route::group(['prefix' => 'api'], function () {
+    Route::group(['prefix' => 'user'], function () {
+        Route::any('signup', function () {
             return user_ins()->signUp();
         });
-        Route::any('login', function() {
+        Route::any('login', function () {
             return user_ins()->login();
         });
-        Route::any('logout', function() {
+        Route::any('logout', function () {
             return user_ins()->logout();
         });
     });
-    Route::group(['prefix'=>'question'], function() {
-        Route::any('add', function() {
+    Route::group(['prefix' => 'question'], function () {
+        Route::any('add', function () {
             return question_ins()->add();
         });
-        Route::any('change', function() {
+        Route::any('change', function () {
             return question_ins()->change();
         });
-        Route::any('read', function() {
+        Route::any('read', function () {
             return question_ins()->read();
         });
-        Route::any('remove', function() {
+        Route::any('remove', function () {
             return question_ins()->remove();
         });
     });
-    Route::group(['prefix'=>'answer'], function() {
-        Route::any('add', function() {
+    Route::group(['prefix' => 'answer'], function () {
+        Route::any('add', function () {
             return answer_ins()->add();
         });
-        Route::any('change', function() {
+        Route::any('change', function () {
             return answer_ins()->change();
         });
-        Route::any('read', function() {
+        Route::any('read', function () {
             return answer_ins()->read();
         });
     });
-    Route::group(['prefix'=>'comment'], function() {
-        Route::any('add', function() {
+    Route::group(['prefix' => 'comment'], function () {
+        Route::any('add', function () {
             return comment_ins()->add();
         });
-        Route::any('read', function() {
+        Route::any('read', function () {
             return comment_ins()->read();
         });
-        Route::any('remove', function() {
+        Route::any('remove', function () {
             return comment_ins()->remove();
         });
     });
 });
 
-Route::any('timeline', 'CommonController@timeline');
+Route::any('api/timeline','CommonController@timeline');
+
+Route::get('tpl/page/home', function (){
+    return view('home');
+});
+Route::get('tpl/page/login', function (){
+    return view('login');
+});
+Route::get('tpl/page/signup', function (){
+    return view('signup');
+});
+Route::get('tpl/page/question_add', function (){
+    return view('question_add');
+});
+
+
 

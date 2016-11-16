@@ -124,7 +124,7 @@ class User extends Model
     public function is_logged_in()
     {
         //如果Session中存在user_id，返回id，否则返回false
-        return session('user_id') ?:false;
+        return is_logged_in();
     }
 
     //更改密码api
@@ -243,7 +243,6 @@ class User extends Model
     {
         return $this
             ->belongsToMany('App\Question')
-            ->withPivot('vote')
             ->withTimestamps();
     }
 }

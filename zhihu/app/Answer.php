@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Request;
 
 class Answer extends Model
 {
@@ -114,6 +115,11 @@ class Answer extends Model
 
         $answer->users()->attach(session('user_id'), ['vote' => $vote]);
         return ['status' => 1];
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
     }
 
     public function users()

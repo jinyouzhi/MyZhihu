@@ -11,6 +11,7 @@ class CommonController extends Controller
         list($limit, $skip) = paginate(rq('page'), rq('limit'));
         //获取问题数据
         $questions = question_ins()
+            ->with('user')
             ->limit($limit)
             ->skip($skip)
             ->orderBy('created_at', 'desc')
@@ -18,6 +19,8 @@ class CommonController extends Controller
 
         //获取回答数剧
         $answers = answer_ins()
+            ->with('user')
+            ->with('users')
             ->limit($limit)
             ->skip($skip)
             ->orderBy('created_at', 'desc')
@@ -26,13 +29,12 @@ class CommonController extends Controller
         //合并数据
         $data = $questions->merge($answers);
         //按时间倒序排列
-        $data = $data->sortByDesc(function ($item)
-        {
+        $data = $data->sortByDesc(function ($item) {
             return $item->created_at;
         });
 
         //获取值
         $data = $data->values()->all();
-        return $data;
+        return suc( $data);
     }
 }
