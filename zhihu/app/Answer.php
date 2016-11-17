@@ -63,13 +63,17 @@ class Answer extends Model
             ['status' => 0, 'msg' => 'db update failed'];
     }
 
-    public function read_by_self_id($user_id)
+    public function read_by_user_id($user_id)
     {
         $user = user_ins()->find($user_id);
         if(!$user)
             return err('user not exists');
 
-        return suc($this->where('user_id', $user_id)
+
+
+        return suc($this
+            ->with('question')
+            ->where('user_id', $user_id)
             ->get()->keyBy('id')->toArray());
     }
 
@@ -79,8 +83,12 @@ class Answer extends Model
         if (!rq('id') && !rq('question_id') && !rq('user_id'))
             return ['status' => 0, 'msg' => 'id or question_id is required'];
 
-        if (rq('user_id'))
-            return $this->read_by_self_id(rq('user_id'));
+        if (rq('user_id')) {
+            $user_id = rq('user_id') == 'self'?
+                session('user_id'):
+                rq('user_id');
+            return $this->read_by_user_id($user_id);
+        }
 
         //查看单个回答
         if (rq('id'))
@@ -149,5 +157,9 @@ class Answer extends Model
             ->belongsToMany('App\User')
             ->withPivot('vote')
             ->withTimestamps();
+    }
+    public function question()
+    {
+        return $this->belongsTo('App\Question');
     }
 }

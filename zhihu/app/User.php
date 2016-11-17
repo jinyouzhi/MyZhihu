@@ -13,7 +13,7 @@ class User extends Model
     {
         $has_username_and_password = $this->has_username_and_password();
         //检查用户名和密码是否为空
-        if(!($has_username_and_password))
+        if (!($has_username_and_password))
             return err('用户名或密码不可为空');
 
         $username = $has_username_and_password[0];
@@ -32,12 +32,9 @@ class User extends Model
         $user = $this;
         $user->password = $hashed_password;
         $user->username = $username;
-        if ($user->save())
-        {
+        if ($user->save()) {
             return suc(['id' => $user->id]);
-        }
-        else
-        {
+        } else {
             return err('DB INSERT Failed!!!');
         }
     }
@@ -45,24 +42,32 @@ class User extends Model
     //获取用户信息api
     public function read()
     {
-        if (!rq('id'))
+        if (!rq('id') && !rq('user_id'))
             return err('required id');
 
+        if (rq('id'))
+            $id = rq('id');
+        elseif (rq('user_id') == 'self')
+            if (session('user_id'))
+                $id = session('user_id');
+            else
+                return err('login required');
+        else
+            $id = rq('user_id');
 
-        $id = rq('id') === 'self' ?
-            session('user_id') : rq('id');
 
         //获取部分字段
         $get = ['id', 'username', 'avatar_url', 'intro'];
-        $user = $this->find(rq('id'), $get);
+        $user = $this->find($id, $get);
+        //dd($user);
         $data = $user->toArray();
-        $answer_count = answer_ins()->where('user_id', rq('id'))->count();
-        $question_count = question_ins()->where('user_id', rq('id'))->count();
+        $answer_count = answer_ins()->where('user_id', $id)->count();
+        $question_count = question_ins()->where('user_id', $id)->count();
         $data['answer_count'] = $answer_count;
         $data['question_count'] = $question_count;
         //$answer_count = $user->answers()->count();
         //$question_count = $user->questions()->count();
-        return suc(['id' => $data]);
+        return suc($data);
     }
 
     //登陆API
@@ -72,7 +77,7 @@ class User extends Model
 
         $has_username_and_password = $this->has_username_and_password();
         //检查用户名和密码是否为空
-        if(!$has_username_and_password)
+        if (!$has_username_and_password)
             return err('username and password are required');
 
         $username = $has_username_and_password[0];
@@ -85,8 +90,7 @@ class User extends Model
 
         //检查密码是否正确
         $hashed_password = $user->password;
-        if (!Hash::check($password, $hashed_password))
-        {
+        if (!Hash::check($password, $hashed_password)) {
             return err('invalid password');
         }
 
@@ -147,7 +151,7 @@ class User extends Model
 
         $user->password = bcrypt(rq('new_password'));
         return $user->save() ?
-            suc():
+            suc() :
             err('db update failed');
     }
 
@@ -170,8 +174,7 @@ class User extends Model
         $captcha = $this->generate_captcha();
         $user->phone_captcha = $captcha;
 
-        if ($user->save())
-        {
+        if ($user->save()) {
             //如果验证码生成成功，短信发送验证码
             $this->send_sms();
             $this->update_robot_time();
@@ -212,8 +215,8 @@ class User extends Model
             return err('invalid phone or invalid phone_captcha');
 
         $user->password = bcrypt(rq('new_password'));
-        return $user->save()?
-            suc():
+        return $user->save() ?
+            suc() :
             err('db update failed');
 
     }

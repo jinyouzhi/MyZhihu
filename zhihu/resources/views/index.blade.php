@@ -31,8 +31,8 @@
         <div class="fr">
             <a ui-sref="home" class="navbar-item">首页</a>
             @if(is_logged_in())
-                <a ui-sref="login" class="navbar-item">{{session('username')}}</a>
-                <a href="{{url('api/user/logout')}}" class="navbar-item">注销</a>
+                <a ui-sref="user" class="navbar-item">{{session('username')}}</a>
+                <a ng-controller="UserController" ng-click="User.logout()" class="navbar-item">注销</a>
             @else
                 <a ui-sref="login" class="navbar-item">登陆</a>
                 <a ui-sref="signup" class="navbar-item">注册</a>

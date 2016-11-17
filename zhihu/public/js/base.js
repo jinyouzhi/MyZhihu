@@ -43,7 +43,7 @@
                         templateUrl: 'tpl/page/question_add'
                     })
                     .state('user', {
-                        url: '/user/:id',
+                        url: '/user/:user_id',
                         templateUrl: 'tpl/page/user'
                     })
             }])
@@ -59,7 +59,13 @@
                 me.read = function (param) {
                     return $http.post('/api/user/read', param)
                         .then(function (r) {
-                            console.log('r', r);
+                            if (r.data.status) {
+                                me.self_data = r.data.data;
+                            }
+                            else {
+                                if (r.data.msg == "login required")
+                                    $state.go('login');
+                            }
                         })
                 }
                 me.signup = function () {
@@ -68,6 +74,18 @@
                                 if (r.data.status) {
                                     me.signup_data = {};
                                     $state.go('login');
+                                }
+                            },
+                            function (e) {
+                            })
+                }
+                me.logout = function () {
+                    $http.post('/api/user/logout', me.logout_data)
+                        .then(function (r) {
+                                if (r.data.status) {
+                                    me.login_data = {};
+                                    location.href = '/';
+                                    $state.go('home');
                                 }
                             },
                             function (e) {
@@ -148,6 +166,15 @@
 
                         })
                 }
+
+                me.read = function (params) {
+                    return $http.post('/api/question/read', params)
+                        .then(function (r) {
+                            if (r.data.status)
+                                me.data = angular.merge({}, me.data, r.data.data);
+                            return r.data.data;
+                        })
+                }
             }
 
         ])
@@ -206,7 +233,7 @@
 
                 me.read = function (params) {
                     return $http.post('/api/answer/read', params)
-                        .then(function(r) {
+                        .then(function (r) {
                             if (r.data.status)
                                 me.data = angular.merge({}, me.data, r.data.data);
                             return r.data.data;
@@ -227,15 +254,21 @@
             '$scope',
             '$stateParams',
             'UserService',
+            'QuestionService',
             'AnswerService',
-            function ($scope, $stateParams, UserService,AnswerService) {
+            function ($scope, $stateParams, UserService, QuestionService, AnswerService) {
                 $scope.User = UserService;
                 console.log('$stateParams', $stateParams);
                 UserService.read($stateParams);
-                AnswerService.read({user_id: $stateParams})
+                AnswerService.read($stateParams)
                     .then(function (r) {
                         if (r)
                             UserService.his_answers = r;
+                    })
+                QuestionService.read($stateParams)
+                    .then(function (r) {
+                        if (r)
+                            UserService.his_questions = r;
                     })
             }
         ])
