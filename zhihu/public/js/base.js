@@ -44,7 +44,7 @@
                         templateUrl: 'tpl/page/question_add'
                     })
                     .state('question.detail', {
-                        url: '/detail:id',
+                        url: '/detail/:id',
                         templateUrl: 'tpl/page/question_detail'
                     })
                     .state('user', {
@@ -150,11 +150,30 @@
         .service('QuestionService', [
             '$http',
             '$state',
-            function ($http, $state) {
+            'AnswerService',
+            function ($http, $state, AnswerService) {
                 var me = this;
                 me.new_question = {};
                 me.go_add_question = function () {
                     $state.go('question.add');
+                }
+                me.update_answer = function (answer_id) {
+                    $http.post('/api/answer/read', {id: answer_id})
+                        .then(function (r) {
+                            if (r.data.status)
+                            {
+                                for(var i = 0; i <me.its_answers.length; ++i)
+                                {
+                                    var answer = me.its_answers[i];
+                                    if (answer.id == answer_id)
+                                    {
+                                        me.its_answers[i] = r.data.data;
+                                        console.log(r.data.data);
+                                    }
+                                }
+                            }
+                        })
+
                 }
                 me.add = function () {
                     if (!me.new_question.title)
@@ -176,8 +195,29 @@
                     return $http.post('/api/question/read', params)
                         .then(function (r) {
                             if (r.data.status)
-                                me.data = angular.merge({}, me.data, r.data.data);
+                                if (params.id) {
+                                    me.data[params.id] = me.current_question = r.data.data;
+                                    me.its_answers = me.current_question.answers_with_user_info;
+                                    me.its_answers = AnswerService.count_vote(me.its_answers);
+                                }
+                                else
+                                    me.data = angular.merge({}, me.data, r.data.data);
                             return r.data.data;
+                        })
+                }
+
+                //在时间线中投票
+                me.vote = function (conf) {
+                    //调用核心投票功能
+                    AnswerService.vote(conf)
+                    //如果投票成功，就更新AnswerService数据
+                        .then(function (r) {
+                            console.log('r', r);
+                            if (r) {
+                                me.update_answer(conf.id);4
+                            }
+                            // if (r)
+                            //     AnswerService.update_data(conf.id);
                         })
                 }
             }
@@ -187,12 +227,14 @@
 
         .service('AnswerService', [
             '$http',
-            function ($http) {
+            '$state',
+            function ($http, $state) {
                 var me = this;
                 me.data = {};
                 me.count_vote = function (answers) {
                     for (var i = 0; i < answers.length; ++i) {
                         var votes, item = answers[i];
+                        me.data[item.id] = item;
                         if (!item['question_id'] || !item['users']) continue;
                         votes = item['users'];
                         item.upvote_count = 0;
@@ -215,13 +257,23 @@
                         return;
                     }
 
+                    var answer = me.data[conf.id];
+                    var users = answer.users;
+                    for (var i = 0; i < users.length; ++i)
+                    {
+                        if (users[i].id == his.id && conf.vote == users[i].pivot.vote)
+                            conf.vote = 3;
+                    }
+                    console.log(conf.vote);
 
                     return $http.post('api/answer/vote', conf)
                         .then(function (r) {
                             if (r.data.status)
                                 return true;
+                            else if (r.data.msg == 'login required')
+                                $state.go('login');
                             else
-                                false;
+                                return false;
                         }, function () {
                             return false;
                         })
@@ -245,6 +297,7 @@
                             return r.data.data;
                         })
                 }
+
             }
         ])
 
@@ -253,6 +306,14 @@
             'QuestionService',
             function ($scope, QuestionService) {
                 $scope.Question = QuestionService;
+            }
+        ])
+        .controller('QuestionDetailController', [
+            '$scope',
+            '$stateParams',
+            'QuestionService',
+            function ($scope, $stateParams, QuestionService) {
+                QuestionService.read($stateParams);
             }
         ])
 
@@ -318,9 +379,9 @@
                     AnswerService.vote(conf)
                     //如果投票成功，就更新AnswerService数据
                         .then(function (r) {
+                            console.log('r', r);
                             if (r)
                                 AnswerService.update_data(conf.id);
-
                         })
                 }
             }

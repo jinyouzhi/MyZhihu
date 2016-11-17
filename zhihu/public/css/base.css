@@ -39,9 +39,15 @@ a {
 
 }
 
+.gray{
+    color: #999;
+}
+
+.container:after,
+.container:before,
 .clearfix:after,
 .clearfix:before {
-    content: '';
+    content: " ";
     clear: both;
     display: table;
 }
@@ -125,11 +131,17 @@ input {
     margin-bottom: 4px;
 }
 
+.questoin-detail h1{
+    margin: 0 auto;
+}
+
+.container.home,
+.container.user,
 .container.signup,
 .container.login,
 .container.questoin-add,
+.container.questoin-detail,
 .container.reset-password {
-    max-width: 400px;
     margin-top: 15px;
 }
 
@@ -152,6 +164,7 @@ h2 {
     float: left;
     width: 10%;
     height: 100%;
+    max-width: 80px;
 }
 
 .feed.item .hr {

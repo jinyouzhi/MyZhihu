@@ -62,7 +62,7 @@ class Question extends Model
     public function read_by_user_id($user_id)
     {
         $user = user_ins()->find($user_id);
-        if(!$user)
+        if (!$user)
             return err('user not exists');
 
         return suc($this->where('user_id', $user_id)
@@ -74,11 +74,11 @@ class Question extends Model
     {
         //请求参数中是否有id，如果有id直接返回id所在的行
         if (rq('id'))
-            return ['status' => 1, 'data' => $this->find(rq('id'))];
+            return ['status' => 1, 'data' => $this->with('answers_with_user_info')->find(rq('id'))];
 
         if (rq('user_id')) {
-            $user_id = rq('user_id') == 'self'?
-                session('user_id'):
+            $user_id = rq('user_id') == 'self' ?
+                session('user_id') :
                 rq('user_id');
             return $this->read_by_user_id($user_id);
         }
@@ -91,8 +91,7 @@ class Question extends Model
             ->limit($limit)
             ->skip($skip)
             ->get(['id', 'title', 'desc', 'user_id', 'created_at', 'updated_at'])
-            ->keyBy('id')
-        ;
+            ->keyBy('id');
 
         return ['status' => 1, 'data' => $r];
     }
@@ -101,7 +100,7 @@ class Question extends Model
     public function remove()
     {
         //判断是否登录
-        if(!user_ins()->is_logged_in())
+        if (!user_ins()->is_logged_in())
             err('login required');
 
         if (!rq('id'))
@@ -114,7 +113,7 @@ class Question extends Model
             err('permission denied');
 
         return $question->delete() ?
-            suc():
+            suc() :
             err('db delete failed');
     }
 
@@ -128,5 +127,15 @@ class Question extends Model
         return $this
             ->belongsToMany('App\User')
             ->withTimestamps();
+    }
+    public function answers()
+    {
+        return $this
+            ->hasMany('App\Answer');
+    }
+
+    public function answers_with_user_info()
+    {
+        return $this->answers()->with('user')->with('users');
     }
 }

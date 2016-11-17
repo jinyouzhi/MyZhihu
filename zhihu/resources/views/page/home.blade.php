@@ -17,13 +17,15 @@
                 <div class="feed-item-content">
                     <div ng-if="item.question_id" class="content-act"> [: item.user.username :] 添加了回答</div>
                     <div ng-if="!item.question_id" class="content-act"> [: item.user.username :] 添加了提问</div>
-                    <div ui-sref="question.detail({id: item.id})" class="title"> [: item.title :]</div>
-                    <div class="content-owner">
+                    <div ng-if="item.question_id" ui-sref="question.detail({id: item.question.id})" class="title"> [: item.question.title :]</div>
+                    <div ng-if="!item.question_id" ui-sref="question.detail({id: item.id})" class="title"> [: item.title :]</div>
+                    <div ng-if="item.question_id" class="content-owner">
                         [: item.user.username :] <span class="desc">[: item.user.intro :]</span>
                     </div>
                     <div class="content-main">[: item.content :]</div>
                     <div class="action-set">
-                        <div class="comment">评论</div>
+                        <span class="comment">评论</span>
+                        <span class="comment">更新时间：[: item.updated_at :]</span>
                     </div>
                     <div class="comment-block">
                         <div class="hr"></div>

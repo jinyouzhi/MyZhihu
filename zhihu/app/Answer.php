@@ -96,9 +96,12 @@ class Answer extends Model
             $answer = $this
                 ->with('user')
                 ->with('users')
+                ->with('question')
                 ->find(rq('id'));
             if (!$answer)
                 return ['status' => 0, 'msg' => 'answer not exists'];
+            $answer = $this->count_vote($answer);
+
             return ['status' => 1, 'data' => $answer];
         }
 
@@ -113,6 +116,21 @@ class Answer extends Model
             ->keyBy('id');
 
         return ['status' => 1, 'data' => $answers];
+    }
+
+    public function count_vote($answer)
+    {
+        $upvote_count = 0;
+        $downvote_count = 0;
+        foreach ($answer->users as $user){
+            if ($user->pivot->vote == 1)
+                $upvote_count++;
+            else if ($user->pivot->vote == 2)
+                $downvote_count++;
+        }
+        $answer->upvote_count = $upvote_count;
+        $answer->downvote_count = $downvote_count;
+        return $answer;
     }
 
     public function vote()

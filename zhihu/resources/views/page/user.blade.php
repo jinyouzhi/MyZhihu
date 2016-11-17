@@ -14,7 +14,13 @@
         </div>
         <h2>用户提问</h2>
         <div ng-repeat="(key, value) in User.his_questions">
-            [: value.title :]
+            <div class="feed-item-content">
+                <div class="title"> [: value.title :]</div>
+                <div class="action-set">
+                    <span class="comment">更新时间：[: value.updated_at :]</span>
+                </div>
+            </div>
+
             <div class="hr"></div>
         </div>
         <h2>用户回答</h2>
@@ -24,7 +30,7 @@
                 <div class="title"> [: value.question.title :]</div>
                 <div class="content-main">[: value.content :]</div>
                 <div class="action-set">
-                    <div class="comment">更新时间：[: value.updated_at :]</div>
+                    <span class="comment">更新时间：[: value.updated_at :]</span>
                 </div>
             </div>
             <div class="hr"></div>
