@@ -11,8 +11,8 @@
     <div class="item-set">
         <div ng-repeat="item in Timeline.data" class="feed item clearfix">
                 <div ng-if="item.question_id" class="vote">
-                    <div class="up">[: item.upvote_count :]</div>
-                    <div class="down">反对</div>
+                    <div ng-click="Timeline.vote({id: item.id, vote:1})" class="up">赞同[: item.upvote_count :]</div>
+                    <div ng-click="Timeline.vote({id: item.id, vote:2})"  class="down">反对[: item.downvote_count :]</div>
                 </div>
                 <div class="feed-item-content">
                     <div ng-if="item.question_id" class="content-act"> [: item.user.username :] 添加了回答</div>
@@ -21,7 +21,7 @@
                     <div class="content-owner">
                         [: item.user.username :] <span class="desc">[: item.user.intro :]</span>
                     </div>
-                    <div class="content-main">[: item.desc :]</div>
+                    <div class="content-main">[: item.content :]</div>
                     <div class="action-set">
                         <div class="comment">评论</div>
                     </div>

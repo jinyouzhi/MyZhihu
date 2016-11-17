@@ -1,6 +1,10 @@
 ;(function () {
     'use strict';
 
+    var his = {
+        id: parseInt($('html').attr('user_id'))
+    }
+
     angular.module('zhihu', [
         'ui.router'
     ])
@@ -38,6 +42,10 @@
                         url: '/add',
                         templateUrl: 'tpl/page/question_add'
                     })
+                    .state('user', {
+                        url: '/user/:id',
+                        templateUrl: 'tpl/page/user'
+                    })
             }])
 
         .service('UserService', [
@@ -47,6 +55,13 @@
                 var me = this;
                 me.signup_data = {};
                 me.login_data = {};
+
+                me.read = function (param) {
+                    return $http.post('/api/user/read', param)
+                        .then(function (r) {
+                            console.log('r', r);
+                        })
+                }
                 me.signup = function () {
                     $http.post('/api/user/signup', me.signup_data)
                         .then(function (r) {
@@ -141,25 +156,61 @@
             '$http',
             function ($http) {
                 var me = this;
+                me.data = {};
                 me.count_vote = function (answers) {
-                    for (var i = 0; i < answers.length; ++i)
-                    {
+                    for (var i = 0; i < answers.length; ++i) {
                         var votes, item = answers[i];
-                        if( !item['question_id'] || ! item['users']) continue;
+                        if (!item['question_id'] || !item['users']) continue;
                         votes = item['users'];
                         item.upvote_count = 0;
                         item.downvote_count = 0;
 
                         if (votes)
-                        for (var j = 0; j < votes.length; ++j) {
-                            var v = votes[j];
-                            if (v['pivot'].vote === 1)
-                                item.upvote_count++;
-                            if (v['pivot'].vote === 2)
-                                item.downvote_count++;
-                        }
+                            for (var j = 0; j < votes.length; ++j) {
+                                var v = votes[j];
+                                if (v['pivot'].vote === 1)
+                                    item.upvote_count++;
+                                if (v['pivot'].vote === 2)
+                                    item.downvote_count++;
+                            }
                     }
                     return answers;
+                }
+                me.vote = function (conf) {
+                    if (!conf.id || !conf.vote) {
+                        console.log('id and vote are required');
+                        return;
+                    }
+
+
+                    return $http.post('api/answer/vote', conf)
+                        .then(function (r) {
+                            if (r.data.status)
+                                return true;
+                            else
+                                false;
+                        }, function () {
+                            return false;
+                        })
+                }
+                me.update_data = function (id) {
+                    return $http.post('/api/answer/read', {id: id})
+                        .then(function (r) {
+                            me.data[id] = r.data.data;
+                        })
+                    // if(angular.isNumeric(input))
+                    //     var id = input;
+                    // if(angular.isArray(input))
+                    //     var id_set = input;
+                }
+
+                me.read = function (params) {
+                    return $http.post('/api/answer/read', params)
+                        .then(function(r) {
+                            if (r.data.status)
+                                me.data = angular.merge({}, me.data, r.data.data);
+                            return r.data.data;
+                        })
                 }
             }
         ])
@@ -172,6 +223,23 @@
             }
         ])
 
+        .controller('UserController', [
+            '$scope',
+            '$stateParams',
+            'UserService',
+            'AnswerService',
+            function ($scope, $stateParams, UserService,AnswerService) {
+                $scope.User = UserService;
+                console.log('$stateParams', $stateParams);
+                UserService.read($stateParams);
+                AnswerService.read({user_id: $stateParams})
+                    .then(function (r) {
+                        if (r)
+                            UserService.his_answers = r;
+                    })
+            }
+        ])
+
         .service('TimelineService', [
             '$http',
             'AnswerService',
@@ -180,6 +248,7 @@
                 me.data = [];
                 me.current_page = 1;
                 me.no_more_data = false;
+                //获取首页数据
                 me.get = function (conf) {
                     conf = conf || {page: me.current_page};
                     if (me.no_more_data)
@@ -190,6 +259,7 @@
                                 if (r.data.data.length) {
                                     me.current_page++;
                                     me.data = me.data.concat(r.data.data);
+                                    //统计每条回答票数
                                     me.data = AnswerService.count_vote(me.data);
                                 }
                                 else {
@@ -203,13 +273,25 @@
                             console.error('network error');
                         })
                 }
+                //在时间线中投票
+                me.vote = function (conf) {
+                    //调用核心投票功能
+                    AnswerService.vote(conf)
+                    //如果投票成功，就更新AnswerService数据
+                        .then(function (r) {
+                            if (r)
+                                AnswerService.update_data(conf.id);
+
+                        })
+                }
             }
         ])
 
         .controller('HomeController', [
             '$scope',
             'TimelineService',
-            function ($scope, TimelineService) {
+            'AnswerService',
+            function ($scope, TimelineService, AnswerService) {
                 var $win;
                 $scope.Timeline = TimelineService;
                 TimelineService.get();
@@ -222,6 +304,21 @@
                         TimelineService.get();
                     }
                 })
+                //监控数据变化，如果数据有变化同时更新其他模块
+                $scope.$watch(function () {
+                    return AnswerService.data;
+                }, function (new_data, old_data) {
+                    var timeline_data = TimelineService.data;
+                    for (var k in new_data) {
+                        //更新时间线中的数据
+                        for (var i = 0; i < timeline_data.length; ++i) {
+                            if (k == timeline_data[i].id) {
+                                timeline_data[i] = new_data[k];
+                            }
+                        }
+                    }
+                    TimelineService.data = AnswerService.count_vote(TimelineService.data);
+                }, true)
             }
         ])
 

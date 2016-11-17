@@ -63,16 +63,32 @@ class Answer extends Model
             ['status' => 0, 'msg' => 'db update failed'];
     }
 
+    public function read_by_self_id($user_id)
+    {
+        $user = user_ins()->find($user_id);
+        if(!$user)
+            return err('user not exists');
+
+        return suc($this->where('user_id', $user_id)
+            ->get()->keyBy('id')->toArray());
+    }
+
     //查看回答api
     public function read()
     {
-        if (!rq('id') && !rq('question_id'))
+        if (!rq('id') && !rq('question_id') && !rq('user_id'))
             return ['status' => 0, 'msg' => 'id or question_id is required'];
+
+        if (rq('user_id'))
+            return $this->read_by_self_id(rq('user_id'));
 
         //查看单个回答
         if (rq('id'))
         {
-            $answer = $this->find(rq('id'));
+            $answer = $this
+                ->with('user')
+                ->with('users')
+                ->find(rq('id'));
             if (!$answer)
                 return ['status' => 0, 'msg' => 'answer not exists'];
             return ['status' => 1, 'data' => $answer];
@@ -103,8 +119,10 @@ class Answer extends Model
         $answer = $this->find(rq('id'));
         if (!$answer) return ['status' => 0, 'msg' => 'answer not exists'];
 
-        //1赞同2反对
-        $vote = rq('vote') <= 1 ? 1 : 2;
+        //1赞同2反对3清空
+        $vote = rq('vote');
+        if ($vote != 1 && $vote != 2 && $vote != 3)
+            return err('invalid vote');
 
         //如果投过票， 清空删除投票结果
         $answer->users()
@@ -112,6 +130,9 @@ class Answer extends Model
             ->where('user_id', session('user_id'))
             ->where('answer_id', rq('id'))
             ->delete();
+
+        if ($vote == 3)
+            return suc();
 
         $answer->users()->attach(session('user_id'), ['vote' => $vote]);
         return ['status' => 1];
