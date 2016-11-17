@@ -1,4 +1,4 @@
-<div ng-controller="QuestionAddController" class="questoin-add container">
+<div ng-controller="QuestionController" class="questoin-add container">
     <div class="card">
         <h1>提问</h1>
 

@@ -36,11 +36,16 @@
                     .state('question', {
                         abstract: true,
                         url: '/question',
-                        template: '<div ui-view></div>'
+                        template: '<div ui-view></div>',
+                        controller: 'QuestionController'
                     })
                     .state('question.add', {
                         url: '/add',
                         templateUrl: 'tpl/page/question_add'
+                    })
+                    .state('question.detail', {
+                        url: '/detail:id',
+                        templateUrl: 'tpl/page/question_detail'
                     })
                     .state('user', {
                         url: '/user/:user_id',
@@ -179,6 +184,7 @@
 
         ])
 
+
         .service('AnswerService', [
             '$http',
             function ($http) {
@@ -242,7 +248,7 @@
             }
         ])
 
-        .controller('QuestionAddController', [
+        .controller('QuestionController', [
             '$scope',
             'QuestionService',
             function ($scope, QuestionService) {

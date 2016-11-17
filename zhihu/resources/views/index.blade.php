@@ -19,7 +19,7 @@
     <div class="container">
         <div class="fl">
             <a ui-sref="home" class="navbar-item brand">知乎</a>
-            <form ng-submit="Question.go_add_question()" ng-controller="QuestionAddController" id="quick_ask">
+            <form ng-submit="Question.go_add_question()" ng-controller="QuestionController" id="quick_ask">
                 <div class="navbar-item">
                     <input ng-model="Question.new_question.title" type="text">
                 </div>
@@ -31,7 +31,7 @@
         <div class="fr">
             <a ui-sref="home" class="navbar-item">首页</a>
             @if(is_logged_in())
-                <a ui-sref="user" class="navbar-item">{{session('username')}}</a>
+                <a ui-sref="user({user_id:'self'})" class="navbar-item">{{session('username')}}</a>
                 <a ng-controller="UserController" ng-click="User.logout()" class="navbar-item">注销</a>
             @else
                 <a ui-sref="login" class="navbar-item">登陆</a>
