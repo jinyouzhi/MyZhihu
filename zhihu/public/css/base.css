@@ -39,7 +39,7 @@ a {
 
 }
 
-.gray{
+.gray {
     color: #999;
 }
 
@@ -118,8 +118,9 @@ label {
 
 textarea,
 input {
+    display: block;
     width: 100%;
-    padding: 5px;
+    padding: 5px 10px;
     border: 1px solid rgba(0, 0, 0, .1);
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -131,7 +132,7 @@ input {
     margin-bottom: 4px;
 }
 
-.questoin-detail h1{
+.questoin-detail h1 {
     margin: 0 auto;
 }
 
@@ -186,20 +187,24 @@ h2 {
     padding: 2px;
     cursor: pointer;
 }
-.feed.item .vote .up{
+
+.feed.item .vote .up {
     color: #075fb6;
     padding: 4px;
 }
-.feed.item .vote .up:hover{
+
+.feed.item .vote .up:hover {
     background: #074f96;
     color: #FFF;
 }
-.feed.item .vote .down{
-    background: rgba(0,0,0,0.1);
+
+.feed.item .vote .down {
+    background: rgba(0, 0, 0, 0.1);
     color: #555;
 }
-.feed.item .vote .down:hover{
-    background: rgba(0,0,0,0.5);
+
+.feed.item .vote .down:hover {
+    background: rgba(0, 0, 0, 0.5);
     color: #FFF;
 }
 
@@ -310,15 +315,20 @@ button[disabled] {
     margin-bottom: 5px;
 }
 
-.info_item > *:first-child{
+.info_item > *:first-child {
     width: 20%;
     float: left;
 }
-.info_item > *:last-child{
+
+.info_item > *:last-child {
     width: 80%;
     float: right;
 }
 
-.use.container .title{
+.use.container .title {
     font-weight: 700;
+}
+
+.answer_form textarea {
+    height: 120px;
 }

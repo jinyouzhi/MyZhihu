@@ -53,5 +53,23 @@
                 <div class="hr"></div>
             </div>
         </div>
+        <form \name="answer_form" class="answer_form" ng-submit="Answer.add_or_update(Question.current_question.id)">
+            <div class="input-group">
+                <textarea name="content"
+                          type="text"
+                          ng-minlength="1"
+                          ng-maxlength="5000"
+                          ng-model="Answer.answer_form.content"
+                          required
+                >
+                    </textarea>
+            </div>
+            <button class="primary"
+                    ng-disabled="answer_form.$invalid"
+                    type="submit"
+            >
+                提交
+            </button>
+        </form>
     </div>
 </div>

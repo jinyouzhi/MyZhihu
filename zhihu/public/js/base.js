@@ -231,6 +231,7 @@
             function ($http, $state) {
                 var me = this;
                 me.data = {};
+                me.answer_form = {};
                 me.count_vote = function (answers) {
                     for (var i = 0; i < answers.length; ++i) {
                         var votes, item = answers[i];
@@ -250,6 +251,17 @@
                             }
                     }
                     return answers;
+                }
+                me.add_or_update = function (question_id) {
+
+                    console.log('me.answer_form', me.answer_form);
+                    if (!question_id)
+                        console.error('question_id is required')
+                    return ;
+                    if (me.answer_form.id)
+                        $http.post('/api/answer/update', me.answer_form);
+                    else
+                        $http.post('/api/answer/add', me.answer_form);
                 }
                 me.vote = function (conf) {
                     if (!conf.id || !conf.vote) {
@@ -312,8 +324,14 @@
             '$scope',
             '$stateParams',
             'QuestionService',
-            function ($scope, $stateParams, QuestionService) {
+            'AnswerService',
+            function ($scope, $stateParams, QuestionService, AnswerService) {
+                $scope.Answer = AnswerService
                 QuestionService.read($stateParams);
+                if ($stateParams.answer_id)
+                    QuestionService.current_answer_id = $stateParams.answer_id;
+                else
+                    QuestionService.current_answer_id = null;
             }
         ])
 
