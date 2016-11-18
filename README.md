@@ -15,6 +15,7 @@
 #### `login` 登陆
 #### `logout` 注销
 #### `signup` 注册
+#### `exists` 查询是否已有用户名
 #### `change_password` 更改密码
 #### `reset_password` 重置密码：发送请求
 #### `validate_reset_password` 重置密码：验证（与上条配合使用）
@@ -29,6 +30,7 @@
 ###Answer 回答模块
 #### `add` 添加回答
 #### `change` 更改回答
+#### `remove` 删除回答
 #### `read` 查看回答
 #### `vote` 投票
 

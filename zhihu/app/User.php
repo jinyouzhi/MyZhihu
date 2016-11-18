@@ -252,4 +252,9 @@ class User extends Model
             ->belongsToMany('App\Question')
             ->withTimestamps();
     }
+
+    public function exists()
+    {
+        return suc(['count' => $this->where('username', rq('username'))->count()]);
+    }
 }

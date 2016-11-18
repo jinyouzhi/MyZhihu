@@ -82,6 +82,9 @@ Route::group(['prefix' => 'api'], function () {
         Route::any('read', function () {
             return user_ins()->read();
         });
+        Route::any('exists', function () {
+            return user_ins()->exists();
+        });
         Route::any('change_password', function () {
             return user_ins()->change_password ();
         });
