@@ -27,36 +27,36 @@
                         <span class="comment">评论</span>
                         <span class="comment">更新时间：[: item.updated_at :]</span>
                     </div>
-                    <div class="comment-block">
-                        <div class="hr"></div>
-                        <div class="rect"></div>
-                        <div class="comment-item-set">
-                            <div class="comment-item clearfix">
-                                <div class="user">黎明</div>
-                                <div class="comment-content">Lorem ipsum dolor sit amet, consectetur adipisicing
-                                    elit. Itaque, saepe sit? Accusantium ea nobis repellendus suscipit! Aliquam
-                                    architecto commodi dicta eligendi, facere facilis laboriosam laborum modi
-                                    provident quisquam ratione tempora.
-                                </div>
-                            </div>
-                            <div class="comment-item clearfix">
-                                <div class="user">黎明</div>
-                                <div class="comment-content">Lorem ipsum dolor sit amet, consectetur adipisicing
-                                    elit. Itaque, saepe sit? Accusantium ea nobis repellendus suscipit! Aliquam
-                                    architecto commodi dicta eligendi, facere facilis laboriosam laborum modi
-                                    provident quisquam ratione tempora.
-                                </div>
-                            </div>
-                            <div class="comment-item clearfix">
-                                <div class="user">黎明</div>
-                                <div class="comment-content">Lorem ipsum dolor sit amet, consectetur adipisicing
-                                    elit. Itaque, saepe sit? Accusantium ea nobis repellendus suscipit! Aliquam
-                                    architecto commodi dicta eligendi, facere facilis laboriosam laborum modi
-                                    provident quisquam ratione tempora.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {{--<div class="comment-block">--}}
+                        {{--<div class="hr"></div>--}}
+                        {{--<div class="rect"></div>--}}
+                        {{--<div class="comment-item-set">--}}
+                            {{--<div class="comment-item clearfix">--}}
+                                {{--<div class="user">黎明</div>--}}
+                                {{--<div class="comment-content">Lorem ipsum dolor sit amet, consectetur adipisicing--}}
+                                    {{--elit. Itaque, saepe sit? Accusantium ea nobis repellendus suscipit! Aliquam--}}
+                                    {{--architecto commodi dicta eligendi, facere facilis laboriosam laborum modi--}}
+                                    {{--provident quisquam ratione tempora.--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                            {{--<div class="comment-item clearfix">--}}
+                                {{--<div class="user">黎明</div>--}}
+                                {{--<div class="comment-content">Lorem ipsum dolor sit amet, consectetur adipisicing--}}
+                                    {{--elit. Itaque, saepe sit? Accusantium ea nobis repellendus suscipit! Aliquam--}}
+                                    {{--architecto commodi dicta eligendi, facere facilis laboriosam laborum modi--}}
+                                    {{--provident quisquam ratione tempora.--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                            {{--<div class="comment-item clearfix">--}}
+                                {{--<div class="user">黎明</div>--}}
+                                {{--<div class="comment-content">Lorem ipsum dolor sit amet, consectetur adipisicing--}}
+                                    {{--elit. Itaque, saepe sit? Accusantium ea nobis repellendus suscipit! Aliquam--}}
+                                    {{--architecto commodi dicta eligendi, facere facilis laboriosam laborum modi--}}
+                                    {{--provident quisquam ratione tempora.--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
                 </div>
                 <div class="hr"></div>
         </div>

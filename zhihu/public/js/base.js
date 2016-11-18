@@ -52,6 +52,13 @@
                         templateUrl: 'tpl/page/user'
                     })
             }])
+        
+        .controller('BaseController', [
+            '$scope', 
+            function ($scope) {
+                $scope.his = his;
+            }
+        ])
 
         .service('UserService', [
             '$state',
@@ -160,13 +167,10 @@
                 me.update_answer = function (answer_id) {
                     $http.post('/api/answer/read', {id: answer_id})
                         .then(function (r) {
-                            if (r.data.status)
-                            {
-                                for(var i = 0; i <me.its_answers.length; ++i)
-                                {
+                            if (r.data.status) {
+                                for (var i = 0; i < me.its_answers.length; ++i) {
                                     var answer = me.its_answers[i];
-                                    if (answer.id == answer_id)
-                                    {
+                                    if (answer.id == answer_id) {
                                         me.its_answers[i] = r.data.data;
                                         console.log(r.data.data);
                                     }
@@ -196,9 +200,13 @@
                         .then(function (r) {
                             if (r.data.status)
                                 if (params.id) {
-                                    me.data[params.id] = me.current_question = r.data.data;
+                                    console.log(params.id);
+                                    console.log(r.data.data);
+                                    me.data = me.current_question = r.data.data;
                                     me.its_answers = me.current_question.answers_with_user_info;
+                                    console.log('me.its_answers', me.its_answers);
                                     me.its_answers = AnswerService.count_vote(me.its_answers);
+                                    console.log('me.its_answers', me.its_answers);
                                 }
                                 else
                                     me.data = angular.merge({}, me.data, r.data.data);
@@ -214,7 +222,8 @@
                         .then(function (r) {
                             console.log('r', r);
                             if (r) {
-                                me.update_answer(conf.id);4
+                                me.update_answer(conf.id);
+                                4
                             }
                             // if (r)
                             //     AnswerService.update_data(conf.id);
@@ -253,15 +262,44 @@
                     return answers;
                 }
                 me.add_or_update = function (question_id) {
-
-                    console.log('me.answer_form', me.answer_form);
-                    if (!question_id)
+                    if (!question_id) {
                         console.error('question_id is required')
-                    return ;
+                        return;
+                    }
+                    me.answer_form.question_id = question_id;
                     if (me.answer_form.id)
-                        $http.post('/api/answer/update', me.answer_form);
+                        $http.post('/api/answer/change', me.answer_form)
+                    .then(function (r) {
+                        if (r.data.status)
+                        {
+                            console.log('change success');
+                            $state.reload();
+                        }
+                    })
                     else
-                        $http.post('/api/answer/add', me.answer_form);
+                        $http.post('/api/answer/add', me.answer_form)
+                    .then(function (r) {
+                        if (r.data.status)
+                        {
+                            console.log('add success');
+                            $state.reload();
+                        }
+                    })
+                }
+                me.delete = function (id) {
+                    if (!id)
+                    {
+                        console.log('id is required');
+                        return;
+                    }
+                    $http.post('/api/answer/remove', {id: id})
+                    .then(function (r) {
+                        if (r.data.status)
+                        {
+                            console.log('delete success');
+                            $state.reload();
+                        }
+                    })
                 }
                 me.vote = function (conf) {
                     if (!conf.id || !conf.vote) {
@@ -271,8 +309,7 @@
 
                     var answer = me.data[conf.id];
                     var users = answer.users;
-                    for (var i = 0; i < users.length; ++i)
-                    {
+                    for (var i = 0; i < users.length; ++i) {
                         if (users[i].id == his.id && conf.vote == users[i].pivot.vote)
                             conf.vote = 3;
                     }

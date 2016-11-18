@@ -119,6 +119,9 @@ Route::group(['prefix' => 'api'], function () {
         Route::any('vote', function () {
             return answer_ins()->vote();
         });
+        Route::any('remove', function () {
+            return answer_ins()->remove();
+        });
     });
     Route::group(['prefix' => 'comment'], function () {
         Route::any('add', function () {

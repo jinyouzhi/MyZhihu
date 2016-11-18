@@ -118,6 +118,27 @@ class Answer extends Model
         return ['status' => 1, 'data' => $answers];
     }
 
+    public function remove()
+    {
+        //检查是否登录
+        if (!user_ins()->is_logged_in())
+            return ['status' => 0, 'msg' => 'login required'];
+
+        //检查id和content是否存在
+        if (!rq('id'))
+            return ['status' => 0, 'msg' => 'id is required'];
+
+        //检查用户
+        $answer = $this->find(rq('id'));
+        if ($answer->user_id != session('user_id'))
+            return ['status' => 0, 'msg' => 'permission denied'];
+
+        return $answer->delete() ?
+            ['status' => 1] :
+            ['status' => 0, 'msg' => 'db delete failed'];
+
+    }
+
     public function count_vote($answer)
     {
         $upvote_count = 0;
